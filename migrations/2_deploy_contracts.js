@@ -1,5 +1,13 @@
-var SimpleStorage = artifacts.require("./SimpleStorage.sol");
+var Escrow = artifacts.require("./Escrow.sol");
+var EscrowExchange = artifacts.require("./EscrowExchange.sol");
 
-module.exports = function(deployer) {
-  deployer.deploy(SimpleStorage);
+const ether = (n) => new web3.utils.BN(web3.utils.toWei(n, 'ether'));
+
+module.exports = function(deployer, network, accounts) {
+  const _buyerAddress = accounts[0]
+  const _sellerAddress = accounts[0]
+  const _amount = ether('1');
+  const _deposit = ether('1');
+  deployer.deploy(Escrow, _buyerAddress, _sellerAddress, amount, deposit);
+  deployer.deploy(EscrowExchange)
 };
