@@ -68,10 +68,46 @@ App = {
     App.setLoading(false)
   },
 
+  // EscrowExchange Calls
+
   addContractAddressToRegistry: (buyerAddress, sellerAddress, contractAddress) => {
     App.setLoading(true)
     await App.escrowExchange.addContractAddressToRegistry(buyerAddress, sellerAddress, contractAddress)
     window.location.reload()
+  },
+
+
+  // Escrow Calls
+  buyerDeposit: () => {
+
+  },
+
+  sellerDeposit: () => {
+
+  },
+
+  reverseBuyerDeposit: () => {
+
+  },
+
+  reverseSellerDeposit: () => {
+
+  },
+
+  claimDeposits: () => {
+
+  },
+
+  sendAmount: () => {
+
+  },
+
+  paySeller: () => {
+
+  },
+
+  refundBuyer: () => {
+
   },
 
   setLoading: (boolean) => {

@@ -23,7 +23,7 @@ contract EscrowExchange {
 		string[] memory addresses = new string[](length);
 		string[] memory statuses = new string[](length);
 
-		for (uint i = 0, i < length; i++)
+		for (uint i = 0; i < length; i++)
 		{
 			addresses[i] = (contractsForUser[msg.sender][startID+1]._address);
 			statuses[i] = (checkStatus(startID+i)); 
