@@ -79,35 +79,51 @@ App = {
 
   // Escrow Calls
   buyerDeposit: () => {
-
+    App.setLoading(true)
+    await App.escrow.buyerDeposit()
+    window.location.reload
   },
 
   sellerDeposit: () => {
-
+    App.setLoading(true)
+    await App.escrow.sellerDeposit()
+    window.location.reload
   },
 
   reverseBuyerDeposit: () => {
-
+    App.setLoading(true)
+    await App.escrow.reverseBuyerDeposit()
+    window.location.reload
   },
 
   reverseSellerDeposit: () => {
-
+    App.setLoading(true)
+    await App.escrow.reverseSellerDeposit()
+    window.location.reload
   },
 
   claimDeposits: () => {
-
+    App.setLoading(true)
+    await App.escrow.claimDeposits()
+    window.location.reload
   },
 
   sendAmount: () => {
-
+    App.setLoading(true)
+    await App.escrow.sendAmount()
+    window.location.reload
   },
 
   paySeller: () => {
-
+    App.setLoading(true)
+    await App.escrow.paySeller()
+    window.location.reload
   },
 
   refundBuyer: () => {
-
+    App.setLoading(true)
+    await App.escrow.refundBuyer()
+    window.location.reload
   },
 
   setLoading: (boolean) => {
