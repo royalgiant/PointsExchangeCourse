@@ -36,22 +36,20 @@ class App extends Component {
       const escrow = new web3.eth.Contract(Escrow.abi, EscrowNetworkData.address)
       const escrowExchange = new web3.eth.Contract(EscrowExchange.abi, EscrowExchangeNetworkData.address)
       this.setState({ escrowExchange })
-      // const contractCount = await marketplace.methods.contractCount().call()
+      // var contractCount = await escrowExchange.methods.ownerContractCount().call()
       // this.setState({ contractCount })
-      // Load Contracts FOR CURRENT USER
+      // // Load Contracts FOR CURRENT USER
       // for (var i = 1; i <= contractCount; i++) {
       //   const product = await marketplace.methods.products(i).call()
       //   this.setState({
       //     products: [...this.state.products, product]
       //   })
       // }
-      var buyers, sellers, amounts, deposits, signatureCounts, statuses = await escrowExchange.methods.getContractsForCurrentUser().call()
-      console.log("Done")
-      console.log(buyers)
-      console.log(sellers)
-      // this.setState({ address, status })
-      // console.log(address)
-      // console.log(status)
+      escrowExchange.methods.getContractForCurrentUser(1).call({from: this.state.account})
+      .then(function(result) {
+        console.log("Done")
+        console.log(result)
+      });
       this.setState({ loading: false})
     } else {
       window.alert('Escrow and EscrowExchange contracts not deployed to detected network.')
@@ -63,6 +61,7 @@ class App extends Component {
     this.state = {
       account: '',
       buyer:'',
+      contracts: [],
       seller: '',
       amount: 0,
       deposit: 0,
@@ -95,7 +94,7 @@ class App extends Component {
 
   createContract(buyer, seller, amount, deposit) {
     this.setState({ loading: true })
-    this.state.escrowExchange.methods.createContract(buyer, seller, amount, deposit)
+    this.state.escrowExchange.methods.createContract(buyer, seller, amount, deposit).send({ from: this.state.account})
     .once('receipt', (receipt) => {
       this.setState({ loading: false })
     })
@@ -103,7 +102,7 @@ class App extends Component {
 
   buyerDeposit() {
     this.setState({ loading: true })
-    this.state.escrowExchange.methods.buyerDeposit()
+    this.state.escrowExchange.methods.buyerDeposit().send({ from: this.state.account})
     .once('receipt', (receipt) => {
       this.setState({ loading: false })
     })
@@ -111,7 +110,7 @@ class App extends Component {
 
   sellerDeposit(){
     this.setState({ loading: true })
-    this.state.escrowExchange.methods.sellerDeposit()
+    this.state.escrowExchange.methods.sellerDeposit().send({ from: this.state.account})
     .once('receipt', (receipt) => {
       this.setState({ loading: false })
     })
@@ -119,7 +118,7 @@ class App extends Component {
 
   reverseBuyerDeposit() {
     this.setState({ loading: true })
-    this.state.escrowExchange.methods.reverseBuyerDeposit()
+    this.state.escrowExchange.methods.reverseBuyerDeposit().send({ from: this.state.account})
     .once('receipt', (receipt) => {
       this.setState({ loading: false })
     })
@@ -127,7 +126,7 @@ class App extends Component {
 
   reverseSellerDeposit() {
     this.setState({ loading: true })
-    this.state.escrowExchange.methods.reverseSellerDeposit()
+    this.state.escrowExchange.methods.reverseSellerDeposit().send({ from: this.state.account})
     .once('receipt', (receipt) => {
       this.setState({ loading: false })
     })
@@ -135,7 +134,7 @@ class App extends Component {
 
   claimDeposits() {
     this.setState({ loading: true })
-    this.state.escrowExchange.methods.claimDeposits()
+    this.state.escrowExchange.methods.claimDeposits().send({ from: this.state.account})
     .once('receipt', (receipt) => {
       this.setState({ loading: false })
     })
@@ -143,7 +142,7 @@ class App extends Component {
 
   sendAmount() {
     this.setState({ loading: true })
-    this.state.escrowExchange.methods.sendAmount()
+    this.state.escrowExchange.methods.sendAmount().send({ from: this.state.account})
     .once('receipt', (receipt) => {
       this.setState({ loading: false })
     })
@@ -151,7 +150,7 @@ class App extends Component {
 
   paySeller() {
     this.setState({ loading: true })
-    this.state.escrowExchange.methods.paySeller()
+    this.state.escrowExchange.methods.paySeller().send({ from: this.state.account})
     .once('receipt', (receipt) => {
       this.setState({ loading: false })
     })
@@ -159,7 +158,7 @@ class App extends Component {
 
   refundBuyer() {
     this.setState({ loading: true })
-    this.state.escrowExchange.methods.refundBuyer()
+    this.state.escrowExchange.methods.refundBuyer().send({ from: this.state.account})
     .once('receipt', (receipt) => {
       this.setState({ loading: false })
     })
