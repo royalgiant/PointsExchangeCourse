@@ -7,8 +7,8 @@ contract EscrowExchange is EscrowFactory {
 
 	event ContractCreated(address buyer, address seller, uint amount, uint deposit, uint signatureCount, string status);
 
-	function getContractsForCurrentUser(uint index) public view returns (address, address, uint, uint, uint, string memory){
-		EscrowContract[] memory retrieve_contract = contractsForUser[msg.sender][index];
+	function getContractForCurrentUser(uint index) public view returns (address, address, uint, uint, uint, string memory){
+		EscrowContract memory retrieved_contract = contractsForUser[msg.sender][index];
         return (retrieved_contract.buyer, retrieved_contract.seller, retrieved_contract.amount, retrieved_contract.deposit, retrieved_contract.signatureCount, checkStatus(uint(retrieved_contract.status)));
     }
 
