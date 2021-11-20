@@ -65,7 +65,13 @@ contract("EscrowExchange", ([deployer, buyer, seller]) => {
 			contractInstance["2"].toString()
 			contractInstance["3"].toString()
 			contractInstance["4"].toNumber()
-			contractInstance["5"]
+			contractInstance["5"].toNumber()
+			contractInstance["6"].toNumber()
+	      */
+
+	      /* Get Contract and Contract Balance
+	      const address = await escrowExchange.address
+	      let balance = await web3.eth.getBalance(address)
 	      */
 
 	    })
@@ -81,7 +87,7 @@ contract("EscrowExchange", ([deployer, buyer, seller]) => {
 		    assert.equal(result["6"].toNumber(), 0, 'amountCount is correct')
 		    assert.equal(result["7"], "Open", 'status is correct')
 		    assert.equal(result["8"], "Some notes", 'notes is correct')
-		    assert.equal(result["9"], false, 'depositMade is correct')
+		    assert.equal(result["9"], 0, 'depositMade is correct')
 	    })
 
 	    it('gets contract count with getContractCountForCurrentUser', async () => {
