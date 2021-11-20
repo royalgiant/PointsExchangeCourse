@@ -31,9 +31,7 @@ class App extends Component {
     this.setState({ account: accounts[0] })
     const networkId = await web3.eth.net.getId()
     const EscrowExchangeNetworkData = EscrowExchange.networks[networkId]
-    const EscrowNetworkData = Escrow.networks[networkId]
     if(EscrowExchangeNetworkData) {
-      const escrow = new web3.eth.Contract(Escrow.abi, EscrowNetworkData.address)
       const escrowExchange = new web3.eth.Contract(EscrowExchange.abi, EscrowExchangeNetworkData.address)
       this.setState({ escrowExchange })
       const contractCount = await escrowExchange.methods.getContractCountForCurrentUser().call({from: this.state.account})
