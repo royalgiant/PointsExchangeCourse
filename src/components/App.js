@@ -177,6 +177,7 @@ class App extends Component {
                   paySeller={this.paySeller}
                   refundBuyer={this.refundBuyer}
                   myContracts={this.state.contracts}
+                  account={this.state.account}
                   />
               }
             </main>
