@@ -139,7 +139,7 @@ contract EscrowFactory {
     and seller have made their deposits but no longer wish to proceed, both must
     sign off on this by calling this function - TESTED*/
 
-    function claimDeposits(address sender) public ifIsAParty(msg.sender) {
+    function claimDeposits(address sender) public ifIsAParty(sender) {
         require(depositCheck[buyer] == 1, "the buyer has not made a deposit for claimDeposits");
         require(depositCheck[seller] == 1, "the seller has not made a deposit for claimDeposits");
         require(amountCheck[buyer] == 0, "the buyer has already sent an amount for claimDeposits"); // TODO TEST

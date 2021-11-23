@@ -69,8 +69,9 @@ contract("EscrowExchange", ([deployer, buyer, seller]) => {
 	   			return contract_count
 	    	}).then(function(contract_count) {
 	    		assert.equal(1, contract_count, "The getContractCountForCurrentUser returns 1 for array size of 1 in if statement");
-	    	}).then(function(receipt) {
 	    		contract2 = escrowExchange.createContract(buyer, seller, amountValue2, depositValue2, "Some notes 2", { from: buyer })
+	    		return contract2
+	    	}).then(function(contract2) {
 	    		const contract_count2 = escrowExchange.getContractCountForCurrentUser({from: buyer});
 	   			return contract_count2
 	    	}).then(function(contract_count2) {

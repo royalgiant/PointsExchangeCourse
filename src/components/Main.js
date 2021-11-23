@@ -23,17 +23,18 @@ class Main extends Component {
     }
   }
 
-  showDepositButton(depositMade, contract, key) {
+  showDepositButton(depositMade, contractDetails, key) {
     if (!Boolean(Number(depositMade))) {
-      return(<Button href="#" className={styles.actionButtons} onClick={ () => this.sendDepositByBuyerOrSeller(contract, key)}>Send Deposit</Button>)
+      var contract = this.props.contractObjects[key]
+      return(<Button href="#" className={styles.actionButtons} onClick={ () => this.sendDepositByBuyerOrSeller(contract, contractDetails)}>Send Deposit</Button>)
     }
   }
 
-  sendDepositByBuyerOrSeller(contract, contract_index) {
-    if (this.props.account === contract[0]) {
-      this.props.buyerDeposit(contract_index, contract[3])
+  sendDepositByBuyerOrSeller(contract, contractDetails) {
+    if (this.props.account === contractDetails[0]) {
+      this.props.buyerDeposit(contract, contractDetails[3])
     } else {
-      this.props.sellerDeposit(contract_index, contract[3])
+      this.props.sellerDeposit(contract, contractDetails[3])
     }
   }
 
@@ -123,19 +124,20 @@ class Main extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    { this.props.myContracts.map((contract, key) => {
-                      var buyer = contract[0]
-                      var seller = contract[1]
-                      var amount = contract[2]
-                      var deposit = contract[3]
-                      var signatureCount = contract[4]
-                      var status = contract[5]
-                      var notes = contract[6]
-                      var depositCheck = contract[7]
+                    { this.props.myContractsDetails.map((contractDetails, key) => {
+                      var buyer = contractDetails[0]
+                      var seller = contractDetails[1]
+                      var amount = contractDetails[2]
+                      var deposit = contractDetails[3]
+                      var signatureCount = contractDetails[4]
+                      var status = contractDetails[5]
+                      var notes = contractDetails[6]
+                      var depositCheck = contractDetails[7]
+                      var contractAddress = contractDetails[10]
                       return(
                         <React.Fragment key={key}>
                           <tr key={key} onClick={this.onClickHandler}>
-                            <td className={styles.contractIndexKey}><Button className={styles.contractIndexKeyButton} variant="link">{key}</Button></td>
+                            <td className={styles.contractIndexKey}><Button className={styles.contractIndexKeyButton} variant="link">{contractAddress}</Button></td>
                             <td><a href="#">{key}</a></td>
                             <td className={styles.address}>{buyer}</td>
                             <td className={styles.address}>{seller}</td>
@@ -149,7 +151,7 @@ class Main extends Component {
                               <div>
                               <p>The Signature Count is <strong>{signatureCount}</strong> <i>(2 is required to complete the contract)</i>.</p>
                               {this.amountSent(amountCount)}
-                              {this.showDepositButton(depositCheck, contract, key)}
+                              {this.showDepositButton(depositCheck, contractDetails, key)}
                               <Button href="#" className={styles.actionButtons}>Send Deposit</Button>
                               <Button href="#" className={styles.actionButtons}>Reverse Deposit</Button>
                               <Button href="#" className={styles.actionButtons}>Claim Deposits</Button>
