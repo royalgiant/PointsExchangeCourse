@@ -38,8 +38,31 @@ class Main extends Component {
     }
   }
 
-  showSendAmountButton(buyer, depositCheck) {
-    if (this.props.account === buyer && Boolean(Number(depositCheck)) === false) {
+  reverseDepositButton(depositMade, contractDetails, key) {
+    if (Boolean(Number(depositMade))) {
+      var contract = this.props.contractObjects[key]
+      return(<Button href="#" className={styles.actionButtons} onClick={ () => this.reverseDepositByBuyerOrSeller(contract, contractDetails)}>Reverse Deposit</Button>)
+    }
+  }
+
+  reverseDepositByBuyerOrSeller(contract, contractDetails) {
+    if (this.props.account === contractDetails[0]) {
+      this.props.reverseBuyerDeposit(contract)
+    } else {
+      this.props.reverseSellerDeposit(contract)
+    }
+  }
+
+  showClaimDepositsButton(depositCheck, sellerDepositCheck, amountCheck, signed, key) {
+    if (Boolean(Number(depositCheck)) === true && Boolean(Number(sellerDepositCheck)) === true &&  Boolean(Number(amountCheck)) === false && Boolean(Number(signed)) === false) {
+      var contract = this.props.contractObjects[key]
+      return(<Button href="#" className={styles.actionButtons} onClick={ () => this.claimDeposits(contract)}>Claim Deposit</Button>)
+    }
+  }
+
+  showSendAmountButton(buyer, depositCheck, sellerDepositCheck, amountCheck, key) {
+    var contract = this.props.contractObjects[key]
+    if (this.props.account === buyer && Boolean(Number(depositCheck)) === true && Boolean(Number(sellerDepositCheck)) === true && Boolean(Number(amountCheck)) === false ){
       return(<Button href="#" className={styles.actionButtons}>Send Amount Requested</Button>)
     }
   }
@@ -114,9 +137,7 @@ class Main extends Component {
                 <Table size="sm" responsive="sm" hover>
                   <thead>
                     <tr>
-                      <th>#</th>
-                      <th>Buyer Address</th>
-                      <th>Seller Address</th>
+                      <th>Contract Addresses:</th>
                       <th>Amount</th>
                       <th>Deposit</th>
                       <th>Notes</th>
@@ -133,14 +154,18 @@ class Main extends Component {
                       var status = contractDetails[5]
                       var notes = contractDetails[6]
                       var depositCheck = contractDetails[7]
+                      var amountCheck = contractDetails[8]
+                      var currentUserSignature = contractDetails[9]
                       var contractAddress = contractDetails[10]
+                      var sellerDepositCheck = contractDetails[11]
                       return(
                         <React.Fragment key={key}>
                           <tr key={key} onClick={this.onClickHandler}>
-                            <td className={styles.contractIndexKey}><Button className={styles.contractIndexKeyButton} variant="link">{contractAddress}</Button></td>
-                            <td><a href="#">{key}</a></td>
-                            <td className={styles.address}>{buyer}</td>
-                            <td className={styles.address}>{seller}</td>
+                            <td className={styles.contractIndexKey}>
+                              <Button className={styles.contractIndexKeyButton} variant="link">Contract Address:{contractAddress}</Button>
+                              <p className={styles.address}><b>Buyer Address:</b> {buyer}</p>
+                              <p className={styles.address}><b>Seller Address:</b>{seller}</p>
+                            </td>
                             <td>{window.web3.utils.fromWei((amount).toString(), 'Ether')} ETH</td>
                             <td>{window.web3.utils.fromWei((deposit).toString(), 'Ether')} ETH</td>
                             <td>{notes}</td>
@@ -149,13 +174,14 @@ class Main extends Component {
                           <tr className="collapse">
                             <td colSpan="7">
                               <div>
-                              <p>The Signature Count is <strong>{signatureCount}</strong> <i>(2 is required to complete the contract)</i>.</p>
+                              <p>The Signature Count is <strong>{signatureCount}</strong> <i>(2 is required to reclaim Deposit)</i>.</p>
                               {this.amountSent(amountCount)}
                               {this.showDepositButton(depositCheck, contractDetails, key)}
+                              {this.reverseDepositButton(depositCheck, contractDetails, key)}
+                              {this.showClaimDepositsButton(depositCheck, sellerDepositCheck, amountCheck, currentUserSignature, key)}
+                              {this.showSendAmountButton(buyer, depositCheck, sellerDepositCheck, amountCheck, key)}
                               <Button href="#" className={styles.actionButtons}>Send Deposit</Button>
                               <Button href="#" className={styles.actionButtons}>Reverse Deposit</Button>
-                              <Button href="#" className={styles.actionButtons}>Claim Deposits</Button>
-                              {this.showSendAmountButton(buyer, depositCheck)}
                               </div>
                             </td>
                           </tr>
