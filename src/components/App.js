@@ -165,7 +165,7 @@ class App extends Component {
     })
   }
 
-  refundBuyer() {
+  refundBuyer(contract) {
     this.setState({ loading: true })
     contract.methods.refundBuyer().send({ from: this.state.account })
     .once('receipt', (receipt) => {
