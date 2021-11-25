@@ -41,6 +41,7 @@ contract EscrowFactory {
     uint signatureCount;
     Status public status;
     string public notes;
+    bool public contractComplete;
     mapping (address => bool) isAParty;
     mapping (address => uint) public signatures;
     mapping (address => uint) public depositCheck;
@@ -83,6 +84,7 @@ contract EscrowFactory {
         deposit = _deposit;
         notes = _notes;
         status = Status.OPEN;
+        contractComplete = false;
         party.push(_buyer);
         party.push(_seller);
         isAParty[_buyer] = true;
@@ -182,6 +184,7 @@ contract EscrowFactory {
         require(depositCheck[buyer] == 1, "the buyer has not deposited yet");
         require(depositCheck[seller] == 1, "the seller has not deposited yet");
         require(amountCheck[buyer] == 1, "the buyer has not sent the amount yet");
+        contractComplete = true;
         seller.transfer(amount);
         buyer.transfer(deposit);
         seller.transfer(deposit);
@@ -195,6 +198,7 @@ contract EscrowFactory {
         require(depositCheck[buyer] == 1, "the buyer has not deposited yet");
         require(depositCheck[seller] == 1, "the seller has not deposited yet");
         require(amountCheck[buyer] == 1, "the buyer has not sent the amount yet");
+        contractComplete = true;
         buyer.transfer(amount);
         seller.transfer(deposit);
         buyer.transfer(deposit);
@@ -249,5 +253,9 @@ contract EscrowFactory {
 
     function getContractBalance() public view returns (uint) {
         return address(this).balance;
+    }
+
+    function getContractComplete() public view returns (bool) {
+        return contractComplete;
     }
 }
