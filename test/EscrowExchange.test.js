@@ -136,4 +136,5 @@ contract("EscrowExchange", ([deployer, buyer, seller]) => {
       	const address = await escrowExchange.address
       	let balance = await web3.eth.getBalance(address)
       	*/
+  })
 })
