@@ -78,9 +78,9 @@ contract EscrowExchange {
     	emit ContractCreated(buyer, seller, amount, deposit, 0, "Open", notes, false);
     }
 
-    function adminReverseContract(uint index) public isAdministrator{
+    function adminContractTakeAction(uint index, uint8 action) public isAdministrator{
     	EscrowFactory retrieved_contract = contractIndexesForUsers[index];
-    	retrieved_contract.adminReverseContract(true);
+    	retrieved_contract.adminContractTakeAction(true, action);
     }
 
     function setAdmin(bool state, address newAdmin) public isAdministrator {
