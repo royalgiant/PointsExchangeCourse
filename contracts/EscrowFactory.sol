@@ -33,8 +33,9 @@ contract EscrowFactory {
 
     //storage
     
-    address payable buyer;
-    address payable seller;
+    address payable public buyer;
+    address payable public seller;
+    address payable public owner;
     address[] public party;
     uint amount;
     uint deposit;
@@ -66,6 +67,11 @@ contract EscrowFactory {
         _;
     }
 
+    modifier isAdminCalled(bool admin) {
+        require(admin == true);
+        _;
+    }
+
      //events
     event BuyerDeposited(address from, string msg, uint amount);
     event SellerDeposited(address from, string msg, uint amount);
@@ -76,8 +82,9 @@ contract EscrowFactory {
     event AmountSent(string msg);
     event SellerPaid(string msg);
     event BuyerRefunded(string msg);
+    event ContractRevertedByAdmin(string msg);
 
-    constructor(address payable _buyer, address payable _seller, uint _amount, uint _deposit, string memory _notes) public {
+    constructor(address payable _buyer, address payable _seller, uint _amount, uint _deposit, string memory _notes, address payable _owner) public {
         buyer = _buyer;
         seller = _seller;
         amount = _amount;
@@ -89,6 +96,7 @@ contract EscrowFactory {
         party.push(_seller);
         isAParty[_buyer] = true;
         isAParty[_seller] = true;
+        owner = _owner;
     }
 
     /* Deposit function for the buyer - checks that the message sender
@@ -205,6 +213,27 @@ contract EscrowFactory {
         emit BuyerRefunded("The buyer has been refunded and all deposits have been returned - transaction cancelled");
     }
 
+    function adminReverseContract(bool isAdmin) public isAdminCalled(isAdmin) {
+        // Charge a fee (i.e. 1-2%) for reversing the contract. Send this fee to me. And I will reimburse our employees/admins. And keep the difference.
+        uint ownerReverseFee = deposit * 15 / 1000; // 1.5% fee for reversing contract.
+        uint depositAfterFees = (deposit / 2) - ownerReverseFee ;
+        uint adminFees = deposit - ownerReverseFee;
+        owner.transfer(adminFees);
+        if (depositCheck[buyer] == 1) {
+            buyer.transfer(depositAfterFees);
+            depositCheck[buyer] = 0;
+        }
+        if (depositCheck[seller] == 1) {
+            seller.transfer(depositAfterFees);
+            depositCheck[seller] = 0;
+        }
+        if (amountCheck[buyer] == 1) {
+            buyer.transfer(amount);
+            amountCheck[buyer] = 0;
+        }
+        emit ContractRevertedByAdmin("The contract has been completely reverted by admin. All deposits and amounts have been refunded.");
+    }
+
     function getBuyer() public view returns (address){
         return buyer;
     }
@@ -257,5 +286,9 @@ contract EscrowFactory {
 
     function getContractComplete() public view returns (bool) {
         return contractComplete;
+    }
+
+    function getOwner() public view returns (address) {
+        return owner;
     }
 }
