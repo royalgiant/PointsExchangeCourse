@@ -37,6 +37,7 @@ class App extends Component {
     if(EscrowExchangeNetworkData) {
       const escrowExchange = new web3.eth.Contract(EscrowExchange.abi, EscrowExchangeNetworkData.address)
       const adminEscrowActions = new web3.eth.Contract(AdminEscrowActions.abi, AdminEscrowActionNetworkData.address)
+      var isAdmin = await adminEscrowActions.methods.getAdmin(this.state.account).call({from: this.state.account})
       this.setState({ escrowExchange, adminEscrowActions })
       const contractCount = await escrowExchange.methods.getContractCountForCurrentUser().call({from: this.state.account})
       this.setState({ contractCount })
@@ -54,6 +55,18 @@ class App extends Component {
           contractDetails: [...this.state.contractDetails, contractDetails]
         })
       }
+      if (isAdmin) {
+        const adminNeededContractCount = await adminEscrowActions.methods.adminNeededContractCount().call({from: this.state.account})
+        for (var j = 0; j < adminNeededContractCount; j++) {
+          var adminContractStructs = await adminEscrowActions.methods.adminNeededContracts(j).call();
+          this.setState({adminContractStructs: [...this.state.adminContractStructs, adminContractStructs]})
+          var adminContracts = await adminEscrowActions.methods.getRetrievedContract(adminContractStructs.contractAddress).call();
+          this.setState({adminContracts: [...this.state.adminContracts, adminContracts]})
+        }
+        console.log("Done")
+        console.log(this.state.adminContractStructs)
+        console.log(this.state.adminContracts)
+      }
       this.setState({ loading: false})
     } else {
       window.alert('Escrow and EscrowExchange contracts not deployed to detected network.')
@@ -67,6 +80,8 @@ class App extends Component {
       buyer:'',
       contracts: [],
       contractDetails: [],
+      adminContractStructs: [],
+      adminContracts: [],
       seller: '',
       amount: 0,
       deposit: 0,
@@ -223,6 +238,7 @@ class App extends Component {
                   contractInterventionRequest={this.contractInterventionRequest}
                   adminContractTakeAction={this.adminContractTakeAction}
                   myContractsDetails={this.state.contractDetails}
+                  adminContractStructs={this.state.adminContractStructs}
                   contractObjects={this.state.contracts}
                   account={this.state.account}
                   />
