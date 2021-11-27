@@ -89,7 +89,6 @@ class App extends Component {
       isAdmin: false
     }
 
-    this.addContractAddressToRegistry = this.addContractAddressToRegistry.bind(this)
     this.buyerDeposit = this.buyerDeposit.bind(this)
     this.sellerDeposit = this.sellerDeposit.bind(this)
     this.reverseBuyerDeposit = this.reverseBuyerDeposit.bind(this)
@@ -101,16 +100,6 @@ class App extends Component {
     this.contractInterventionRequest = this.contractInterventionRequest.bind(this)
     this.createContract = this.createContract.bind(this)
     this.adminContractTakeAction = this.adminContractTakeAction.bind(this)
-  }
-
-  // EscrowExchange Calls
-
-  addContractAddressToRegistry(buyerAddress, sellerAddress, contractAddress) {
-    this.setState({ loading: true })
-    this.state.escrowExchange.methods.addContractAddressToRegistry(buyerAddress, sellerAddress, contractAddress)
-    .once('receipt', (receipt) => {
-      this.setState({ loading: false })
-    })
   }
 
   // AdminEscrowActions Calls

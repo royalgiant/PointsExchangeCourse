@@ -323,7 +323,7 @@ contract("EscrowFactory", ([deployer, buyer, seller]) => {
     it('succeeds', async() => {
       await contractRequestAdminAction.sendAmount( {from: buyer, value: amountValue})
       var pay_seller = await contractRequestAdminAction.requestAdminAction("Buyer Request: I request a refund", {from: buyer})
-      expectEvent(pay_seller, 'AdminActionRequested', {msg: "A refund from admin has been requested."});
+      expectEvent(pay_seller, 'AdminActionRequested', {msg: "An action from admin has been requested."});
       var status = await contractRequestAdminAction.getContractStatus()
       assert.equal(status, "Request Action")
       var notes_check = await contractRequestAdminAction.notes()

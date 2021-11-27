@@ -47,11 +47,9 @@ contract AdminEscrowActions {
 	function contractInterventionRequest(uint index, string memory _notes, address escrow_factory_contract_address) public {
 		if (RequestedHelpContractExists[escrow_factory_contract_address] == false) {
     		adminNeededContracts[adminNeededContractCount] = ThirdPartyNeededContract(index, 0, escrow_factory_contract_address); // Needs to change to perhaps use the contract address as index...
-    		adminNeededContractCount = adminNeededContractCount + 1;
+    		adminNeededContractCount ++;
     		RequestedHelpContractExists[escrow_factory_contract_address] = true;
     	}
-    	adminNeededContracts[adminNeededContractCount] = ThirdPartyNeededContract(index, 0, escrow_factory_contract_address);
-    	adminNeededContractCount = adminNeededContractCount ++;
     	EscrowFactory retrieved_contract = EscrowFactory(escrow_factory_contract_address);
     	retrieved_contract.requestAdminAction(_notes);
     	emit ContractInterventionRequestMade("Admin Intervention Requested!");

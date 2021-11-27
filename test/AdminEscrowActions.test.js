@@ -21,10 +21,10 @@ contract("AdminEscrowActions", ([deployer, buyer, seller]) => {
     retrievedContract2 = await EscrowFactory.new(buyer, seller, amountValue, depositValue, "Some notes", deployer)
     await retrievedContract.buyerDeposit({from: buyer, value: depositValue});
     await retrievedContract.sellerDeposit({from: seller, value: depositValue});
-    await retrievedContract.sendAmount({from: buyer, value: amountValue})
+    await retrievedContract.sendAmount({from: buyer, value: amountValue});
     await retrievedContract2.buyerDeposit({from: buyer, value: depositValue});
     await retrievedContract2.sellerDeposit({from: seller, value: depositValue});
-    await retrievedContract2.sendAmount({from: buyer, value: amountValue})
+    await retrievedContract2.sendAmount({from: buyer, value: amountValue});
   })
 
   describe('contract', async () => {
@@ -72,23 +72,30 @@ contract("AdminEscrowActions", ([deployer, buyer, seller]) => {
     it("getRetrievedContract and its attributes", async () => {
       return AdminEscrowActions.deployed().then(function(instance) {
         adminEscrowInstance = instance
-        adminEscrowInstance.contractInterventionRequest(0, "some notes", retrievedContract2.address);
-        return adminEscrowInstance.getRetrievedContract(retrievedContract2.address);
-      }).then(function(retrieved_contract2){
-        assert.equal(retrieved_contract2[0], buyer, 'buyer is correct')
-        assert.equal(retrieved_contract2[1], seller, 'seller is correct')
-        assert.equal(retrieved_contract2[2].toString(), amountValue, 'amount is correct')
-        assert.equal(retrieved_contract2[3].toString(), depositValue, 'deposit is correct')
-        assert.equal(retrieved_contract2[4], "Request Action", 'status is correct')
-        assert.equal(retrieved_contract2[5], "Some notes \n some notes", 'notes is correct')
+        const event_receipt = adminEscrowInstance.contractInterventionRequest(0, "some notes", retrievedContract2.address);
+        return event_receipt;
+      }).then(function(event_receipt){
+        expectEvent(event_receipt, 'ContractInterventionRequestMade', {msg: "Admin Intervention Requested!"});
+        const returned_contract2 = adminEscrowInstance.getRetrievedContract(retrievedContract2.address);
+        return returned_contract2
+      }).then(function(returned_contract2){
+        assert.equal(returned_contract2[0], buyer, 'buyer is correct')
+        assert.equal(returned_contract2[1], seller, 'seller is correct')
+        assert.equal(returned_contract2[2].toString(), amountValue, 'amount is correct')
+        assert.equal(returned_contract2[3].toString(), depositValue, 'deposit is correct')
+        assert.equal(returned_contract2[4], "Request Action", 'status is correct')
+        assert.equal(returned_contract2[5], "Some notes \n some notes", 'notes is correct')
       })
     })
 
     it("setsAdmin and getsAdmin", async() => {
       return AdminEscrowActions.deployed().then(function(instance) {
         adminEscrowInstance = instance
-        adminEscrowInstance.setAdmin(true, buyer, {from: deployer})
-        return adminEscrowInstance.getAdmin(buyer, {from: deployer})
+        const receipt = adminEscrowInstance.setAdmin(true, buyer, {from: deployer})
+        return receipt
+      }).then(function(receipt){
+        const admin_result = adminEscrowInstance.getAdmin(buyer)
+        return admin_result
       }).then(function(admin_result){
         assert.equal(admin_result, true, "address is an admin");
       })

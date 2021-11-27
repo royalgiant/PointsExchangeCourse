@@ -193,7 +193,7 @@ contract EscrowFactory {
         require(amountCheck[buyer] == 1, "amount required");
         status = Status.REQUESTADMINACTION;
         notes = append(notes, " \n ", _notes);
-        emit AdminActionRequested("A refund from admin has been requested.");
+        emit AdminActionRequested("An action from admin has been requested.");
     }
 
     function adminContractTakeAction(bool isAdmin, uint8 _action) public isAdminCalled(isAdmin) {
