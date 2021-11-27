@@ -165,6 +165,7 @@ contract EscrowFactory {
         require(depositCheck[seller] == 1, "deposit required");
         require(amountCheck[buyer] == 1, "amount required");
         contractComplete = true;
+        status = Status.CLOSED;
         seller.transfer(amount);
         buyer.transfer(deposit);
         seller.transfer(deposit);
@@ -179,6 +180,7 @@ contract EscrowFactory {
         require(depositCheck[seller] == 1, "deposit required");
         require(amountCheck[buyer] == 1, "amount required");
         contractComplete = true;
+        status = Status.CLOSED;
         buyer.transfer(amount);
         seller.transfer(deposit);
         buyer.transfer(deposit);
@@ -215,7 +217,9 @@ contract EscrowFactory {
             seller.transfer(amount);
             amountCheck[buyer] = 0;
         }
-        emit ContractActionCompletedByAdmin("The contract has been completely reverted by admin. All deposits and amounts have been refunded.");
+        contractComplete = true;
+        status = Status.CLOSED;
+        emit ContractActionCompletedByAdmin("The contract has been completely reverted by admin. All deposits and amounts have been refunded or paid out.");
     }
 
     function getIfAddressDeposited(address a) public view returns (uint){

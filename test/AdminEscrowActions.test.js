@@ -88,7 +88,7 @@ contract("AdminEscrowActions", ([deployer, buyer, seller]) => {
       return AdminEscrowActions.deployed().then(function(instance) {
         adminEscrowInstance = instance
         adminEscrowInstance.setAdmin(true, buyer, {from: deployer})
-        return adminEscrowInstance.getAdmin(buyer)
+        return adminEscrowInstance.getAdmin(buyer, {from: deployer})
       }).then(function(admin_result){
         assert.equal(admin_result, true, "address is an admin");
       })
