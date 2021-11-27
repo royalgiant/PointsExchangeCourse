@@ -10,9 +10,9 @@ contract EscrowFactory {
     address payable public seller;
     address payable public owner;
     address[] public party;
-    uint amount;
-    uint deposit;
-    uint8 signatureCount;
+    uint public amount;
+    uint public deposit;
+    uint8 public signatureCount;
     Status public status;
     string public notes;
     bool public contractComplete;
@@ -185,11 +185,12 @@ contract EscrowFactory {
         emit BuyerRefunded("The buyer has been refunded and all deposits have been returned - transaction cancelled");
     }
 
-    function requestAdminAction() public {
+    function requestAdminAction(string memory _notes) public {
         require(depositCheck[buyer] == 1, "deposit required");
         require(depositCheck[seller] == 1, "deposit required");
         require(amountCheck[buyer] == 1, "amount required");
         status = Status.REQUESTADMINACTION;
+        notes = append(notes, " \n ", _notes);
         emit AdminActionRequested("A refund from admin has been requested.");
     }
 
@@ -217,30 +218,6 @@ contract EscrowFactory {
         emit ContractActionCompletedByAdmin("The contract has been completely reverted by admin. All deposits and amounts have been refunded.");
     }
 
-    function getBuyer() public view returns (address){
-        return buyer;
-    }
-
-    function getSeller() public view returns (address){
-        return seller;
-    }
-
-    function getAmount() public view returns (uint){
-        return amount;
-    }
-
-    function getDeposit() public view returns (uint){
-        return deposit;
-    }
-
-    function getSignatureCount() public view returns (uint){
-        return signatureCount;
-    }
-
-    function getNotes() public view returns (string memory){
-        return notes;
-    }
-
     function getIfAddressDeposited(address a) public view returns (uint){
         return depositCheck[a];
     }
@@ -263,14 +240,6 @@ contract EscrowFactory {
 
     function getAmountCheck(address a) public view returns (uint){
         return amountCheck[a];
-    }
-
-    function getContractComplete() public view returns (bool) {
-        return contractComplete;
-    }
-
-    function getOwner() public view returns (address) {
-        return owner;
     }
 
     function append(string memory a, string memory b, string memory c) internal pure returns (string memory) {
