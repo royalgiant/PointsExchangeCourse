@@ -10,6 +10,15 @@ import Button from 'react-bootstrap/Button';
 
 class Main extends Component {
 
+  constructor(props) {
+    super(props)
+    this.state = { notesForAdmin: "", notesAdminTextCount: 0 };
+  }
+
+  notesForAdminHandler = (e) => {
+    this.setState({notesForAdmin: e.target.value, notesAdminTextCount: e.target.value.length});
+  }
+
   onClickHandler = (e) => {
     const hiddenElement = e.currentTarget.nextSibling;
     hiddenElement.className.indexOf("collapse show") > -1 ? hiddenElement.classList.remove("show") : hiddenElement.classList.add("show");
@@ -31,18 +40,18 @@ class Main extends Component {
   }
 
   sendDepositByBuyerOrSeller(contract, contractDetails) {
-    if (this.props.account === contractDetails[0]) {
-      this.props.buyerDeposit(contract, contractDetails[3])
+    if (this.props.account === contractDetails[1]) {
+      this.props.buyerDeposit(contract, contractDetails[4])
     } else {
-      this.props.sellerDeposit(contract, contractDetails[3])
+      this.props.sellerDeposit(contract, contractDetails[4])
     }
   }
 
   reverseDepositButton(contractDetails, key) {
-    var sellerDepositCheck = contractDetails[11]
-    var buyerDepositCheck = contractDetails[12]
-    var buyerCanReverseDeposit = this.props.account === contractDetails[0] && Boolean(Number(buyerDepositCheck)) === true && Boolean(Number(sellerDepositCheck)) === false
-    var sellerCanReverseDeposit = this.props.account === contractDetails[1] &&Boolean(Number(buyerDepositCheck)) === false && Boolean(Number(sellerDepositCheck)) === true
+    var sellerDepositCheck = contractDetails[12]
+    var buyerDepositCheck = contractDetails[13]
+    var buyerCanReverseDeposit = this.props.account === contractDetails[1] && Boolean(Number(buyerDepositCheck)) === true && Boolean(Number(sellerDepositCheck)) === false
+    var sellerCanReverseDeposit = this.props.account === contractDetails[2] &&Boolean(Number(buyerDepositCheck)) === false && Boolean(Number(sellerDepositCheck)) === true
     if (buyerCanReverseDeposit || sellerCanReverseDeposit) {
       var contract = this.props.contractObjects[key]
       return(<Button href="#" className={styles.actionButtons} onClick={ () => this.reverseDepositByBuyerOrSeller(contract, contractDetails)}>Reverse Deposit</Button>)
@@ -50,17 +59,22 @@ class Main extends Component {
   }
 
   reverseDepositByBuyerOrSeller(contract, contractDetails) {
-    if (this.props.account === contractDetails[0]) {
+    if (this.props.account === contractDetails[1]) {
       this.props.reverseBuyerDeposit(contract)
     } else {
       this.props.reverseSellerDeposit(contract)
     }
   }
 
-  showClaimDepositsButton(buyerDepositCheck, sellerDepositCheck, amountCheck, signed, contractComplete, key) {
+  showClaimDepositsButton(signatureCount, buyerDepositCheck, sellerDepositCheck, amountCheck, signed, contractComplete, key) {
     if (Boolean(Number(buyerDepositCheck)) === true && Boolean(Number(sellerDepositCheck)) === true &&  Boolean(Number(amountCheck)) === false && Boolean(Number(signed)) === false && contractComplete === false) {
       var contract = this.props.contractObjects[key]
-      return(<Button href="#" className={styles.actionButtons} onClick={ () => this.claimDeposits(contract)}>Claim Deposit</Button>)
+      return(
+        <div>
+          <p>The Signature Count is <strong>{signatureCount}</strong> <i>(2 is required to reclaim Deposit)</i>.</p>
+          <Button href="#" className={styles.actionButtons} onClick={ () => this.claimDeposits(contract)}>Claim Deposit</Button>
+        </div>
+      )
     }
   }
 
@@ -79,12 +93,24 @@ class Main extends Component {
     this.props.sendAmount(contract, amount)
   }
 
-  showPaySellerButton(buyer, buyerDepositCheck, sellerDepositCheck, amountCheck, contractComplete, key) {
+  // Shown to the Buyer to pay seller and end the contract
+  showPaySellerButton(buyer, buyerDepositCheck, sellerDepositCheck, amountCheck, contractAddress, contractComplete, key) {
     var contract = this.props.contractObjects[key]
     if (this.props.account === buyer && Boolean(Number(buyerDepositCheck)) === true && Boolean(Number(sellerDepositCheck)) === true && Boolean(Number(amountCheck)) === true && contractComplete === false) {
       return(
         <div>
-          <Button href="#" className={styles.actionButtons} onClick={ () => this.paySeller(contract)}>Pay Seller Requested</Button>
+           <form onSubmit={(event) => {
+            event.preventDefault();
+            this.contractInterventionRequest(key, contractAddress)
+          }}>
+            <div className="form-group mr-sm-2">
+              <b>Request Admin Intervention To Refund Buyer Notes:</b>
+              <textarea id="notes" type="text" onChange={this.notesForAdminHandler} className="form-control" placeholder="I'm requesting admin intervention to refund the buyer and complete this contract because..." maxLength="100" required />
+              <i className={styles.notesAdminTextCount}>{ this.state.notesAdminTextCount }/100</i>
+            </div>
+            <Button href="#" className={styles.actionButtons} onClick={ () => this.paySeller(contract)}>Pay Seller Requested</Button>
+            <button type="submit" className="btn btn-primary">Request Admin Intervention To Refund Buyer</button>
+          </form>
           <div><i><b>Warning:</b> Please be aware that paying the seller is an <b>irreversible action</b> and will complete the contract.</i></div>
         </div>
       )
@@ -95,12 +121,24 @@ class Main extends Component {
     this.props.paySeller(contract)
   }
 
-  showRefundBuyerButton(seller, buyerDepositCheck, sellerDepositCheck, amountCheck, contractComplete, key) {
+  // Shown to the Seller to refund buyer and end the contract
+  showRefundBuyerButton(seller, buyerDepositCheck, sellerDepositCheck, amountCheck, contractAddress, contractComplete, key) {
     var contract = this.props.contractObjects[key]
     if (this.props.account === seller && Boolean(Number(buyerDepositCheck)) === true && Boolean(Number(sellerDepositCheck)) === true && Boolean(Number(amountCheck)) === true && contractComplete === false ) {
       return(
         <div>
-          <Button href="#" className={styles.actionButtons} onClick={ () => this.refundBuyer(contract)}>Refund Buyer Requested</Button>
+          <form onSubmit={(event) => {
+            event.preventDefault();
+            this.contractInterventionRequest(key, contractAddress)
+          }}>
+            <div className="form-group mr-sm-2">
+              <b>Request Admin Intervention To Pay Seller Notes:</b>
+              <textarea id="notes" type="text" onChange={this.notesForAdminHandler} className="form-control" placeholder="I'm requesting admin intervention to pay the seller and complete this contract because..." required />
+              <i className={styles.notesAdminTextCount}>{ this.state.notesAdminTextCount }/100</i>
+            </div>
+            <Button href="#" className={styles.actionButtons} onClick={ () => this.refundBuyer(contract)}>Refund Buyer Requested</Button>
+            <button type="submit" className="btn btn-primary">Request Admin Intervention To Pay Seller</button>
+          </form>
           <div><i><b>Warning:</b> Please be aware that the refunding the buyer is an <b>irreversible action</b> and will complete the contract.</i></div>
         </div>
       )
@@ -109,6 +147,27 @@ class Main extends Component {
 
   refundBuyer(contract) {
     this.props.refundBuyer(contract)
+  }
+
+  contractInterventionRequest(key, contractAddress) {
+    this.props.contractInterventionRequest(key, this.state.notesForAdmin, contractAddress)
+  }
+
+  showAdminContractTakeActionButtons(index, contractDetails) {
+    if (contractDetails[15] === true) {
+      var address = contractDetails[11]
+      return(
+        <div>
+          <Button href="#" className={styles.actionButtons} onClick={ () => this.adminContractTakeAction(index, 0, address)}>Admin Refund Buyer</Button>
+          <Button href="#" className={styles.actionButtons} onClick={ () => this.adminContractTakeAction(index, 1, address)}>Admin Pay Seller</Button>
+          <div><i><b>Warning:</b> Please be aware that these are <b>irreversible actions</b> and will refund <b>all deposits</b> and either refund the buyer or pay the seller the <b>amount</b>.</i></div>
+        </div>
+      )
+    }
+  }
+
+  adminContractTakeAction(index, action, address) {
+    this.props.adminContractTakeAction(index, action, address)
   }
 
   render() {
@@ -190,27 +249,27 @@ class Main extends Component {
                   </thead>
                   <tbody>
                     { this.props.myContractsDetails.map((contractDetails, key) => {
-                      var buyer = contractDetails[0]
-                      var seller = contractDetails[1]
-                      var amount = contractDetails[2]
-                      var deposit = contractDetails[3]
-                      var signatureCount = contractDetails[4]
-                      var status = contractDetails[5]
-                      var notes = contractDetails[6]
-                      var depositCheck = contractDetails[7]
-                      var amountCheck = contractDetails[8]
-                      var currentUserSignature = contractDetails[9]
-                      var contractAddress = contractDetails[10]
-                      var sellerDepositCheck = contractDetails[11]
-                      var buyerDepositCheck = contractDetails[12]
-                      var contractComplete = contractDetails[13]
+                      var buyer = contractDetails[1]
+                      var seller = contractDetails[2]
+                      var amount = contractDetails[3]
+                      var deposit = contractDetails[4]
+                      var signatureCount = contractDetails[5]
+                      var status = contractDetails[6]
+                      var notes = contractDetails[7]
+                      var depositCheck = contractDetails[8]
+                      var amountCheck = contractDetails[9]
+                      var currentUserSignature = contractDetails[10]
+                      var contractAddress = contractDetails[11]
+                      var sellerDepositCheck = contractDetails[12]
+                      var buyerDepositCheck = contractDetails[13]
+                      var contractComplete = contractDetails[14]
                       return(
                         <React.Fragment key={key}>
                           <tr key={key} onClick={this.onClickHandler}>
                             <td className={styles.contractIndexKey}>
                               <Button className={styles.contractIndexKeyButton} variant="link">Contract Address:{contractAddress}</Button>
                               <p className={styles.address}><b>Buyer Address:</b> {buyer}</p>
-                              <p className={styles.address}><b>Seller Address:</b>{seller}</p>
+                              <p className={styles.address}><b>Seller Address:</b> {seller}</p>
                             </td>
                             <td>{window.web3.utils.fromWei((amount).toString(), 'Ether')} ETH</td>
                             <td>{window.web3.utils.fromWei((deposit).toString(), 'Ether')} ETH</td>
@@ -223,10 +282,11 @@ class Main extends Component {
                               <p>The Signature Count is <strong>{signatureCount}</strong> <i>(2 is required to reclaim Deposit)</i>.</p>
                               {this.showDepositButton(depositCheck, contractDetails, key)}
                               {this.reverseDepositButton(contractDetails, key)}
-                              {this.showClaimDepositsButton(buyerDepositCheck, sellerDepositCheck, amountCheck, currentUserSignature, contractComplete, key)}
+                              {this.showClaimDepositsButton(signatureCount, buyerDepositCheck, sellerDepositCheck, amountCheck, currentUserSignature, contractComplete, key)}
                               {this.showSendAmountButton(buyer, buyerDepositCheck, sellerDepositCheck, amountCheck, amount, contractComplete, key)}
-                              {this.showPaySellerButton(buyer, buyerDepositCheck, sellerDepositCheck, amountCheck, contractComplete, key)}
-                              {this.showRefundBuyerButton(seller, buyerDepositCheck, sellerDepositCheck, amountCheck, contractComplete, key)}
+                              {this.showPaySellerButton(buyer, buyerDepositCheck, sellerDepositCheck, amountCheck, contractAddress contractComplete, key)}
+                              {this.showRefundBuyerButton(seller, buyerDepositCheck, sellerDepositCheck, amountCheck, contractAddress, contractComplete, key)}
+                              {this.showAdminReverseContractButton(key, contractDetails)}
                               </div>
                             </td>
                           </tr>
