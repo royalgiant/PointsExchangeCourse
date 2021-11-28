@@ -160,7 +160,6 @@ class Main extends Component {
 
   showAdminContractTakeActionButtons(index, address) {
     if (this.props.isAdmin === true) {
-      var address = contractDetails[11]
       return(
         <div>
           <Button href="#" className={styles.actionButtons} onClick={ () => this.adminContractTakeAction(index, 0, address)}>Admin Refund Buyer</Button>
@@ -176,9 +175,9 @@ class Main extends Component {
   }
 
   showHideCompletedContracts(key) {
-    if (parseInt(this.props.adminContractStructs[key].completed) == 0) {
+    if (parseInt(this.props.adminContractStructs[key].completed) === 0) {
       return null
-    } else if (parseInt(this.props.adminContractStructs[key].completed) == 1 && this.state.showCompleted) {
+    } else if (parseInt(this.props.adminContractStructs[key].completed) === 1 && this.state.showCompleted) {
       return null
     } else {
       return styles.hideCompletedContracts
@@ -382,7 +381,7 @@ class Main extends Component {
                               {(status !== "Closed") ? this.reverseDepositButton(contractDetails, key) : null}
                               {(status !== "Closed") ? this.showClaimDepositsButton(signatureCount, buyerDepositCheck, sellerDepositCheck, amountCheck, currentUserSignature, contractComplete, key) : null}
                               {(status !== "Closed") ? this.showSendAmountButton(buyer, buyerDepositCheck, sellerDepositCheck, amountCheck, amount, contractComplete, key) : null}
-                              {(status !== "Closed") ? this.showPaySellerButton(buyer, buyerDepositCheck, sellerDepositCheck, amountCheck, contractAddress contractComplete, key) : null}
+                              {(status !== "Closed") ? this.showPaySellerButton(buyer, buyerDepositCheck, sellerDepositCheck, amountCheck, contractAddress, contractComplete, key) : null}
                               {(status !== "Closed") ? this.showRefundBuyerButton(seller, buyerDepositCheck, sellerDepositCheck, amountCheck, contractAddress, contractComplete, key) : null}
                               </div>
                             </td>

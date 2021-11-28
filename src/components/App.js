@@ -48,7 +48,6 @@ class App extends Component {
         var buyerDepositCheck = await contract.methods.getIfAddressDeposited(contractDetails[1]).call({ from: this.state.account })
         var sellerDepositCheck = await contract.methods.getIfAddressDeposited(contractDetails[2]).call({ from: this.state.account })
         var contractCompleted = await contract.methods.contractComplete().call({ from: this.state.account })
-        var isAdmin = await adminEscrowActions.methods.getAdmin(this.state.account).call({from: this.state.account})
         Object.assign(contractDetails, {12: sellerDepositCheck, 13: buyerDepositCheck, 14: contractCompleted, 15: isAdmin})
         this.setState({
           contracts: [...this.state.contracts, contract],
